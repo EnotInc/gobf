@@ -3,16 +3,20 @@ package repl
 import (
 	"bufio"
 	"fmt"
-	"gobf/interpret"
+	"gobf/evaluator"
+	"gobf/lexer"
+	"gobf/parser"
 	"io"
 )
 
-const PROMPT = "\n ~$ "
+const (
+	COLOR  = "\033[92m"
+	CLEAR  = "\033[0m"
+	PROMPT = "\n " + COLOR + "~$ " + CLEAR // ~$
+)
 
-func Start(in io.Reader, out io.Writer) {
+func Start(in io.Reader, out io.Writer) { //Do I really need `out` here?
 	scanner := bufio.NewScanner(in)
-
-	I := interpret.New()
 
 	for {
 		fmt.Print(PROMPT)
@@ -22,8 +26,10 @@ func Start(in io.Reader, out io.Writer) {
 		}
 
 		line := scanner.Text()
-		I.Read(line)
+		l := lexer.New(line)
+		p := parser.New(l)
 
-		I.Run()
+		program := p.ParseProgram()
+		evaluator.Eval(program)
 	}
 }

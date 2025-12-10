@@ -29,7 +29,11 @@ func Start(in io.Reader, out io.Writer) { //Do I really need `out` here?
 		l := lexer.New(line)
 		p := parser.New(l)
 
-		program := p.ParseProgram()
+		program, err := p.ParseProgram()
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+			return
+		}
 		evaluator.Eval(program)
 	}
 }

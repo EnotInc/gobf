@@ -7,6 +7,13 @@ import (
 
 type Program struct {
 	Nodes []Node
+
+	Pointers []Pointers
+}
+
+type Pointers struct {
+	Left  int16
+	Right int16
 }
 
 type Node struct {

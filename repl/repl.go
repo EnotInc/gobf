@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gobf/evaluator"
 	"gobf/lexer"
+	"gobf/nast"
 	"gobf/parser"
 	"io"
 )
@@ -17,6 +18,9 @@ const (
 
 func Start(in io.Reader, out io.Writer) { //Do I really need `out` here?
 	scanner := bufio.NewScanner(in)
+	var program *nast.Program
+
+	E := evaluator.New()
 
 	for {
 		fmt.Print(PROMPT)
@@ -29,11 +33,7 @@ func Start(in io.Reader, out io.Writer) { //Do I really need `out` here?
 		l := lexer.New(line)
 		p := parser.New(l)
 
-		program, err := p.ParseProgram()
-		if err != nil {
-			fmt.Printf("Error: %s", err.Error())
-			return
-		}
-		evaluator.Eval(program)
+		program = p.ParseProgram()
+		E.Eval(program)
 	}
 }

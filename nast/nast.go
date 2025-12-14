@@ -8,10 +8,10 @@ import (
 type Program struct {
 	Nodes []Node
 
-	Pointers []Pointers
+	Loops []Loop
 }
 
-type Pointers struct {
+type Loop struct {
 	Left  int16
 	Right int16
 }

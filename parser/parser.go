@@ -23,37 +23,35 @@ func New(l *lexer.Lexer) *Parser {
 	return p
 }
 
-func (p *Parser) ParseProgram() (*nast.Program, error) {
+func (p *Parser) ParseProgram() *nast.Program {
 	program := &nast.Program{}
 
-	i := 0
+	var i int16 = 0
 	for !p.curTokenIs(token.EOF) {
 		var n nast.Node
 
 		switch p.curToken.Type {
-		case token.INCREASE, token.DECREASE, token.MOV_L, token.MOV_R, token.WRITE:
-			n.Token = p.curToken
+		case token.INCREASE, token.DECREASE, token.MOV_L, token.MOV_R:
 			n.Streak = p.countSreak()
-		case token.READ:
-			n.Token = p.curToken
-			n.Streak = 1
 		case token.L_B:
-			n.Token = p.curToken
 			n.Streak = 1
 			loopStack = append(loopStack, int16(i))
 		case token.R_B:
-			n.Token = p.curToken
 			if len(loopStack) == 0 {
 				panic("the ']' doesn't have the '['")
 			}
 			var match = loopStack[len(loopStack)-1]
 
-			p := nast.Pointers{Left: match, Right: int16(i)}
-			program.Pointers = append(program.Pointers, p)
+			pointers := nast.Loop{Left: match, Right: i}
+			program.Loops = append(program.Loops, pointers)
 
 			loopStack = loopStack[:len(loopStack)-1]
 			n.Streak = 1
+		case token.WRITE, token.READ:
+			n.Streak = 1
 		}
+		n.Token = p.curToken
+
 		program.Nodes = append(program.Nodes, n)
 		i++
 
@@ -62,12 +60,13 @@ func (p *Parser) ParseProgram() (*nast.Program, error) {
 	if len(loopStack) != 0 {
 		panic("the '[' doesn't have the ']'")
 	}
-	return program, nil
+
+	return program
 }
 
 func (p *Parser) countSreak() int16 {
 	var amount int16 = 1
-	for p.peekToken == p.curToken {
+	for p.curToken == p.peekToken {
 		p.nextToken()
 		amount++
 	}
@@ -78,6 +77,7 @@ func (p *Parser) nextToken() {
 	p.curToken = p.peekToken
 	p.peekToken = p.l.NextToken()
 }
+
 func (p *Parser) curTokenIs(tt token.TokenType) bool {
 	return tt == p.curToken.Type
 }

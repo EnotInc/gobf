@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"gobf/evaluator"
+	"gobf/lexer"
+	"gobf/parser"
 	"gobf/repl"
 	"os"
 )
@@ -12,17 +15,25 @@ const (
 
 func main() {
 	args := os.Args
-	if len(args) == 2 {
-		// file := args[1]
-		// fileContent, err := os.ReadFile(file)
-		// if err != nil {
-		// 	fmt.Printf("Cannot open file %s", file)
-		// 	return
-		// }
 
-		// I := interpret.New()
-		// I.Read(string(fileContent))
-		// I.Run()
+	E := evaluator.New()
+
+	if len(args) == 2 {
+		file := args[1]
+		fileContent, err := os.ReadFile(file)
+		if err != nil {
+			fmt.Printf("Cannot open file %s.\nError: %v", file, err)
+			return
+		}
+
+		fileStr := string(fileContent)
+
+		l := lexer.New(fileStr)
+		p := parser.New(l)
+
+		program := p.ParseProgram()
+		E.Eval(program)
+
 	} else {
 		fmt.Print(GREETINGS)
 		repl.Start(os.Stdin, os.Stdout)

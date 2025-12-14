@@ -8,42 +8,61 @@ import (
 	"os"
 )
 
-const DATASIZE = 16
+// const DATASIZE = 65355
+const DATASIZE = 8
 
-var pointer int16
-var data []int16
+type Evaluator struct {
+	pointer int16
+	data    []int16
+}
 
-func Eval(p *nast.Program) {
+func New() *Evaluator {
+	e := &Evaluator{pointer: 0}
+	e.data = make([]int16, DATASIZE)
+	return e
+}
+
+func (e *Evaluator) Eval(p *nast.Program) {
 	reader := bufio.NewReader(os.Stdin)
-	data = make([]int16, DATASIZE)
 
-	for i := 0; i < len(p.Nodes); i++ {
-		n := p.Nodes[i]
+	read := 0
+	for {
+		if read >= len(p.Nodes) {
+			return
+		}
+		if e.pointer >= DATASIZE {
+			fmt.Print("How did you mange to use all of the cells?")
+			return
+		}
+		n := p.Nodes[read]
+		curLoopId := len(p.Loops) - 1
 
 		switch n.Token.Type {
 		case token.INCREASE:
-			data[pointer] += n.Streak
+			e.data[e.pointer] += n.Streak
 		case token.DECREASE:
-			data[pointer] -= n.Streak
+			e.data[e.pointer] -= n.Streak
 		case token.MOV_L:
-			pointer -= n.Streak
+			e.pointer -= n.Streak
 		case token.MOV_R:
-			pointer += n.Streak
+			e.pointer += n.Streak
 		case token.WRITE:
-			fmt.Printf("%c", data[pointer])
 		case token.READ:
 			value, _ := reader.ReadByte()
-			data[pointer] = int16(value)
+			e.data[e.pointer] = int16(value)
 		case token.L_B:
-			if data[pointer] == 0 {
-				i = int(p.Pointers[len(p.Pointers)-1].Right)
+			if e.data[e.pointer] == 0 {
+				read = int(p.Loops[curLoopId].Right)
 			}
 		case token.R_B:
-			if data[pointer] != 0 {
-				i = int(p.Pointers[len(p.Pointers)-1].Left)
+			fmt.Printf("%v\tpointer: %d\n", p.Loops, e.pointer)
+			if e.data[e.pointer] != 0 {
+				read = int(p.Loops[curLoopId].Left)
+			} else {
+				fmt.Print("\tend\n")
 			}
-		case token.EOF:
-			return
 		}
+		fmt.Printf("\tPointer: %d\tReader: %d\n", e.pointer, read)
+		read++
 	}
 }

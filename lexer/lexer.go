@@ -16,13 +16,10 @@ func New(input string) *Lexer {
 }
 
 func (l *Lexer) NextToken() token.Token {
-	if l.position > len(l.input)-1 {
-		l.ch = 0
-	} else {
-		l.ch = l.input[l.position]
-	}
-
 	var tok token.Token
+
+	l.readChar()
+	l.skepWhiteSpace()
 
 	switch l.ch {
 	case '+':
@@ -45,10 +42,24 @@ func (l *Lexer) NextToken() token.Token {
 		tok = l.newToken(token.EOF, l.ch)
 	}
 
-	l.position++
 	return tok
+}
+
+func (l *Lexer) readChar() {
+	if l.position > len(l.input)-1 {
+		l.ch = 0
+	} else {
+		l.ch = l.input[l.position]
+	}
+	l.position++
 }
 
 func (l *Lexer) newToken(tt token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tt, Literal: ch}
+}
+
+func (l *Lexer) skepWhiteSpace() {
+	for l.ch == ' ' || l.ch == '\n' || l.ch == '\t' || l.ch == '\r' {
+		l.readChar()
+	}
 }

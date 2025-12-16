@@ -2,6 +2,7 @@ package lexer
 
 import (
 	"gobf/token"
+	"os"
 )
 
 type Lexer struct {
@@ -38,6 +39,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = l.newToken(token.L_B, l.ch)
 	case ']':
 		tok = l.newToken(token.R_B, l.ch)
+	case 'q':
+		os.Exit(0) //place it here so it will exit the programm without any other calculations
 	case 0:
 		tok = l.newToken(token.EOF, l.ch)
 	}

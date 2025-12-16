@@ -24,9 +24,12 @@ func New(l *lexer.Lexer) *Parser {
 }
 
 func (p *Parser) ParseProgram() *nast.Program {
-	program := &nast.Program{}
+	program := &nast.Program{
+		Forward:  make(map[int16]int16),
+		Backword: make(map[int16]int16),
+	}
 
-	var i int16 = 0
+	var i int16 = 0 //counting the tokens that we iterating
 	for !p.curTokenIs(token.EOF) {
 		var n nast.Node
 
@@ -38,12 +41,12 @@ func (p *Parser) ParseProgram() *nast.Program {
 			loopStack = append(loopStack, int16(i))
 		case token.R_B:
 			if len(loopStack) == 0 {
-				panic("the ']' doesn't have the '['")
+				panic("the ']' doesn't have the '[' pair")
 			}
-			var match = loopStack[len(loopStack)-1]
 
-			pointers := nast.Loop{Left: match, Right: i}
-			program.Loops = append(program.Loops, pointers)
+			left := loopStack[len(loopStack)-1]
+			program.Forward[left] = i
+			program.Backword[i] = left
 
 			loopStack = loopStack[:len(loopStack)-1]
 			n.Streak = 1

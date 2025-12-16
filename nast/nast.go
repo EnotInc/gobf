@@ -8,12 +8,8 @@ import (
 type Program struct {
 	Nodes []Node
 
-	Loops []Loop
-}
-
-type Loop struct {
-	Left  int16
-	Right int16
+	Forward  map[int16]int16
+	Backword map[int16]int16
 }
 
 type Node struct {

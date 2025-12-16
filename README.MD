@@ -15,12 +15,13 @@ You also can change name `bf` to any other, it's up to you
 # Usage
 ## REPL
 To launch REPL mode, either run the compiled application in the terminal, or run `cmd/main.go`.
+To exit it use `CTRL-C`, or type `q` to quit
 
 ## Reading a File
 To execute a program from a file, you need to pass it as an argument when starting the application.
 Example:
 ```bash
-go run ./cmd/main.go foo.bf
+go run ./cmd/main.go ./cmd/HelloWorld.bf
 
 #if you build u can do this instead
 bf foo.bf

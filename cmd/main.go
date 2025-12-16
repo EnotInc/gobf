@@ -36,6 +36,6 @@ func main() {
 
 	} else {
 		fmt.Print(GREETINGS)
-		repl.Start(os.Stdin, os.Stdout)
+		repl.Start(os.Stdin)
 	}
 }

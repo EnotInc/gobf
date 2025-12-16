@@ -16,7 +16,7 @@ const (
 	PROMPT = "\n " + COLOR + "~$ " + CLEAR // ~$
 )
 
-func Start(in io.Reader, out io.Writer) { //Do I really need `out` here?
+func Start(in io.Reader) {
 	scanner := bufio.NewScanner(in)
 	var program *nast.Program
 
@@ -30,6 +30,7 @@ func Start(in io.Reader, out io.Writer) { //Do I really need `out` here?
 		}
 
 		line := scanner.Text()
+
 		l := lexer.New(line)
 		p := parser.New(l)
 

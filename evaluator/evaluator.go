@@ -8,17 +8,17 @@ import (
 	"os"
 )
 
-const DATASIZE int16 = 32767
+const DATASIZE uint16 = 65535
 
 type Evaluator struct {
-	pointer int16
-	data    []int16
+	pointer uint16
+	data    []byte
 	reader  int16
 }
 
 func New() *Evaluator {
 	e := &Evaluator{}
-	e.data = make([]int16, DATASIZE)
+	e.data = make([]byte, DATASIZE)
 	return e
 }
 
@@ -26,11 +26,8 @@ func (e *Evaluator) Eval(p *nast.Program) {
 	r := bufio.NewReader(os.Stdin)
 
 	for {
+
 		if e.reader >= int16(len(p.Nodes)) {
-			return
-		}
-		if e.pointer >= DATASIZE {
-			fmt.Print("How did you mange to use all of the cells?")
 			return
 		}
 
@@ -38,9 +35,9 @@ func (e *Evaluator) Eval(p *nast.Program) {
 
 		switch node.Token.Type {
 		case token.INCREASE:
-			e.data[e.pointer] += node.Streak
+			e.data[e.pointer] += byte(node.Streak)
 		case token.DECREASE:
-			e.data[e.pointer] -= node.Streak
+			e.data[e.pointer] -= byte(node.Streak)
 		case token.MOV_L:
 			e.pointer -= node.Streak
 		case token.MOV_R:
@@ -49,7 +46,7 @@ func (e *Evaluator) Eval(p *nast.Program) {
 			fmt.Printf("%c", e.data[e.pointer])
 		case token.READ:
 			value, _ := r.ReadByte()
-			e.data[e.pointer] = int16(value)
+			e.data[e.pointer] = value
 		case token.L_B:
 			if e.data[e.pointer] == 0 {
 				e.reader = p.Forward[e.reader]

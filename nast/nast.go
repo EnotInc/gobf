@@ -14,7 +14,7 @@ type Program struct {
 
 type Node struct {
 	Token  token.Token
-	Streak int16
+	Streak uint16
 	//Streak us to count the streak of the same symbols
 	//like "+++++" -> Node.Token.TokenType=token.PlUS, Node.Strak = 5
 }

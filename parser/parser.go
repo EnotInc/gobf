@@ -67,8 +67,8 @@ func (p *Parser) ParseProgram() *nast.Program {
 	return program
 }
 
-func (p *Parser) countSreak() int16 {
-	var amount int16 = 1
+func (p *Parser) countSreak() uint16 {
+	var amount uint16 = 1
 	for p.curToken == p.peekToken {
 		p.nextToken()
 		amount++
